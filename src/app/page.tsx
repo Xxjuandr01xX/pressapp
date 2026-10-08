@@ -1,69 +1,60 @@
-import Image from "next/image";
+import { FileText, MessageCircle, Smartphone, Zap } from "lucide-react";
+import Link from "next/link";
+import { BigLink } from "@/components/ui/BigButton";
+import { PRICE_USD, TRIAL_DAYS } from "@/lib/subscription";
 
-export default function Home() {
+export default function Landing() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+    <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-10 px-5 py-8">
+      <header className="flex items-center gap-2">
+        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-navy text-white">
+          <Zap aria-hidden />
+        </span>
+        <span className="text-2xl font-extrabold text-navy">Press</span>
+      </header>
+
+      <section className="flex flex-col gap-5">
+        <h1 className="text-3xl font-extrabold leading-tight">
+          Presupuestos profesionales desde tu celular, en 1 minuto
+        </h1>
+        <p className="text-lg text-muted">
+          Deja de mandar presupuestos desordenados por WhatsApp. Con Press haces un PDF bonito, con tu nombre y tus
+          precios, y se lo mandas a tu cliente al instante.
+        </p>
+        <BigLink href="/registro" variant="accent">
+          Probar {TRIAL_DAYS} días gratis
+        </BigLink>
+        <Link href="/login" className="text-center text-lg font-semibold text-navy underline">
+          Ya tengo cuenta
+        </Link>
+      </section>
+
+      <section className="grid gap-4">
+        {[
+          { icon: <FileText />, t: "Plantillas listas", d: "Plomería, electricidad, albañilería, herrería y refrigeración." },
+          { icon: <MessageCircle />, t: "Directo a WhatsApp", d: "Un toque y tu cliente recibe el presupuesto." },
+          { icon: <Smartphone />, t: "Fácil de usar", d: "Botones grandes. Si sabes usar WhatsApp, sabes usar Press." },
+        ].map((f) => (
+          <div key={f.t} className="flex gap-4 rounded-2xl bg-white p-5 shadow-sm">
+            <span className="text-navy">{f.icon}</span>
+            <div>
+              <h2 className="text-lg font-bold">{f.t}</h2>
+              <p className="text-muted">{f.d}</p>
+            </div>
+          </div>
+        ))}
+      </section>
+
+      <section className="rounded-2xl bg-navy p-6 text-center text-white">
+        <p className="text-lg">Después de la prueba</p>
+        <p className="text-4xl font-extrabold">{PRICE_USD} USDT</p>
+        <p className="text-lg">al mes · pagas con Binance · sin límites</p>
+      </section>
+
+      <footer className="flex justify-center gap-6 pb-4 text-muted">
+        <Link href="/terminos" className="underline">Términos</Link>
+        <Link href="/privacidad" className="underline">Privacidad</Link>
+      </footer>
+    </main>
   );
 }
