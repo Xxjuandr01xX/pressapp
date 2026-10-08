@@ -7,6 +7,11 @@ service cloud.firestore {
       return request.auth != null;
     }
     
+    // Función auxiliar para el Super Administrador
+    function isAdmin() {
+      return isAuth() && request.auth.token.email == "jd.rincon021@gmail.com";
+    }
+    
     // Función auxiliar para chequear propiedad
     function isOwner(userId) {
       return isAuth() && request.auth.uid == userId;
@@ -14,21 +19,21 @@ service cloud.firestore {
 
     // Colecciones raíz protegidas (solo lectura o gestionadas por el backend)
     match /users/{userId} {
-      allow read, write: if isOwner(userId);
+      allow read, write: if isOwner(userId) || isAdmin();
     }
     
     match /subscriptions/{userId} {
       // El backend escribe las suscripciones, el cliente solo lee la suya
-      allow read: if isOwner(userId);
-      allow write: if false; 
+      allow read: if isOwner(userId) || isAdmin();
+      allow write: if isAdmin(); 
     }
     
     match /payments/{paymentId} {
       // El usuario puede leer los suyos
-      allow read: if isAuth() && resource.data.userId == request.auth.uid;
+      allow read: if (isAuth() && resource.data.userId == request.auth.uid) || isAdmin();
       // Permite crear pagos si los asigna a sí mismo
       allow create: if isAuth() && request.resource.data.userId == request.auth.uid;
-      allow update, delete: if false; // Solo el webhook/admin actualiza estado
+      allow update, delete: if isAdmin(); // Solo el admin actualiza estado
     }
 
     // Subcolecciones del usuario (Negocios, Clientes, Presupuestos)

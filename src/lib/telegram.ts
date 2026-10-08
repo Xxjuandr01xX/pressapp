@@ -41,15 +41,7 @@ export async function notifyPaymentReceipt(p: { paymentId: string; email: string
     formData.append("chat_id", process.env.TELEGRAM_CHAT_ID);
     formData.append("photo", blob, "receipt.jpg");
     formData.append("parse_mode", "HTML");
-    formData.append("caption", `💰 <b>Comprobante recibido</b>\nUsuario: ${esc(p.email)}\nMonto: ${p.amount} ${p.currency}\nID: <code>${p.paymentId}</code>\n\nVerifica en tu Binance antes de aprobar.`);
-    formData.append("reply_markup", JSON.stringify({
-      inline_keyboard: [
-        [
-          { text: "✅ Aprobar", callback_data: `approve:${p.paymentId}` },
-          { text: "❌ Rechazar", callback_data: `reject:${p.paymentId}` },
-        ],
-      ],
-    }));
+    formData.append("caption", `💰 <b>Comprobante recibido</b>\nUsuario: ${esc(p.email)}\nMonto: ${p.amount} ${p.currency}\nID: <code>${p.paymentId}</code>\n\nVe al <a href="https://pressapp.netlify.app/panel">Panel Administrativo</a> para aprobar o rechazar este pago.`);
 
     // 3. Enviar a Telegram
     await fetch(api("sendPhoto"), {
