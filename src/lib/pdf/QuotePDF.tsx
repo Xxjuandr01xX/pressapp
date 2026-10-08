@@ -235,6 +235,18 @@ const s = StyleSheet.create({
     color: GRAY,
     textAlign: "center",
   },
+  watermarkOverlay: {
+    position: "absolute",
+    top: 350,
+    left: 10,
+    opacity: 0.1,
+    transform: "rotate(-45deg)",
+  },
+  watermarkOverlayText: {
+    fontSize: 90,
+    color: "#000000",
+    fontFamily: "Helvetica-Bold",
+  },
 });
 
 // ─── Helpers ───────────────────────────────────────────────
@@ -267,6 +279,14 @@ export function QuotePDF({
   return (
     <Document>
       <Page size="LETTER" style={s.page}>
+        
+        {/* Marca de agua GIGANTE en diagonal (solo si showWatermark = true) */}
+        {showWatermark && (
+          <View style={s.watermarkOverlay}>
+            <Text style={s.watermarkOverlayText}>Generado en Trial</Text>
+          </View>
+        )}
+
         {/* ─── Header ─── */}
         <View style={s.header}>
           <View>

@@ -12,7 +12,7 @@ import { LogOut, Save } from "lucide-react";
 
 export default function MiNegocioPage() {
   const { user } = useAuth();
-  const { business } = useAppContext();
+  const { business, status } = useAppContext();
   const router = useRouter();
 
   const [name, setName] = useState(business.businessName);
@@ -88,10 +88,20 @@ export default function MiNegocioPage() {
       <section className="flex flex-col gap-3 rounded-2xl border-2 border-navy/10 bg-navy/5 p-5">
         <h2 className="text-sm font-bold uppercase text-navy">Mi Suscripción</h2>
         <div className="flex justify-between items-center">
-          <span className="font-bold">Plan Trial (15 días)</span>
-          <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-extrabold text-green-700">ACTIVO</span>
+          <span className="font-bold">
+            {status === "active" ? "Plan Premium" : "Plan Trial (15 días)"}
+          </span>
+          <span className={`rounded-full px-3 py-1 text-xs font-extrabold ${status === "active" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}>
+            {status === "active" ? "ACTIVO" : "DE PRUEBA"}
+          </span>
         </div>
-        <p className="text-xs text-muted">Próximamente podrás ver tus pagos aquí.</p>
+        {status === "active" ? (
+          <p className="text-xs text-muted">
+            Tu suscripción está activa. ¡Gracias por usar Press!
+          </p>
+        ) : (
+          <p className="text-xs text-muted">Próximamente podrás ver tus pagos aquí.</p>
+        )}
       </section>
 
       <button

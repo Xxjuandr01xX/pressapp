@@ -16,7 +16,7 @@ import { Download, Send, CheckCircle, XCircle } from "lucide-react";
 
 export default function QuoteDetailPage() {
   const { user } = useAuth();
-  const { business } = useAppContext();
+  const { business, status } = useAppContext();
   const params = useParams();
   const router = useRouter();
   const quoteId = params.id as string;
@@ -46,6 +46,8 @@ export default function QuoteDetailPage() {
     year: "numeric",
   }).format(date);
 
+  const isTrial = status !== "active";
+
   async function generateAndDownload() {
     if (!quote || !totals) return;
     setGenerating(true);
@@ -66,6 +68,7 @@ export default function QuoteDetailPage() {
           taxRate={quote.taxRate || DEFAULT_TAX_RATE}
           notes={quote.notes}
           date={formattedDate}
+          showWatermark={isTrial}
         />
       ).toBlob();
 
@@ -101,6 +104,7 @@ export default function QuoteDetailPage() {
           taxRate={quote.taxRate || DEFAULT_TAX_RATE}
           notes={quote.notes}
           date={formattedDate}
+          showWatermark={isTrial}
         />
       ).toBlob();
 
