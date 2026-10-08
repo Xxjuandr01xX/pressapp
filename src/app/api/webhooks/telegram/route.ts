@@ -2,20 +2,21 @@ import { NextResponse } from "next/server";
 import { answerCallback, sendText } from "@/lib/telegram";
 import { approvePayment, rejectPayment } from "@/lib/subscription-store";
 
-/** Recibe los clicks de los botones inline (Aprobar / Rechazar) en Telegram. */
 export async function POST(req: Request) {
-  // Verificar token de seguridad de Telegram
-  const secret = req.headers.get("x-telegram-bot-api-secret-token");
-  if (secret !== process.env.TELEGRAM_WEBHOOK_SECRET) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
+  let cbId = "";
   try {
+    const secret = req.headers.get("x-telegram-bot-api-secret-token");
+    if (secret !== process.env.TELEGRAM_WEBHOOK_SECRET) {
+      await sendText(`⚠️ Error de Webhook: El Secret Token no coincide. Revisa la variable TELEGRAM_WEBHOOK_SECRET en Netlify.`);
+      return NextResponse.json({ ok: true }); // Siempre 200 para destrabar el botón
+    }
+
     const body = await req.json();
     if (!body.callback_query) return NextResponse.json({ ok: true });
 
     const cb = body.callback_query;
-    const data = cb.data as string; // ej: "approve:pay_123" o "reject:pay_123"
+    cbId = cb.id;
+    const data = cb.data as string;
     const [action, paymentId] = data.split(":");
     const reviewer = cb.from.username ?? cb.from.first_name;
 
@@ -34,8 +35,10 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ ok: true });
-  } catch (e) {
+  } catch (e: any) {
     console.error(e);
-    return NextResponse.json({ ok: true }); // Telegram reintenta si no devuelves 200, evita loops
+    if (cbId) await answerCallback(cbId, "Error interno");
+    await sendText(`❌ Error interno del servidor al procesar el botón:\n<code>${e.message || String(e)}</code>`);
+    return NextResponse.json({ ok: true });
   }
 }
