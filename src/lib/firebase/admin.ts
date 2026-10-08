@@ -8,9 +8,9 @@ function adminApp(): App {
   return initializeApp({
     credential: cert({
       projectId: process.env.FIREBASE_ADMIN_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
-      // Netlify guarda los saltos de línea como "\n" literales
-      privateKey: process.env.FIREBASE_ADMIN_PRIVATE_KEY?.replace(/\\n/g, "\n"),
+      clientEmail: process.env.FIREBASE_ADMIN_CLIENT_EMAIL?.replace(/"/g, ""),
+      // Netlify puede inyectar comillas o saltos literales dependiendo de cómo se pegue
+      privateKey: process.env.FIREBASE_ADMIN_PRIVATE_KEY?.replace(/"/g, "")?.replace(/\\n/g, "\n"),
     }),
   });
 }
