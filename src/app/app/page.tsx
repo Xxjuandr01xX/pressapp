@@ -6,7 +6,7 @@ import { useAppContext } from "./layout";
 import { BigLink } from "@/components/ui/BigButton";
 import { StatusBadge } from "@/components/ui/Status";
 import { onQuotes } from "@/lib/firebase/store";
-import { calcTotals, formatUSD } from "@/lib/quote";
+import { calcTotals, formatCurrency } from "@/lib/quote";
 import { TRADES } from "@/lib/templates";
 import type { Quote } from "@/types";
 import { Plus } from "lucide-react";
@@ -67,7 +67,7 @@ export default function HomePage() {
             <p className="text-xs text-muted">✅ Aprobados</p>
           </div>
           <div>
-            <p className="text-2xl font-extrabold text-navy">{formatUSD(approvedTotal)}</p>
+            <p className="text-2xl font-extrabold text-navy">{formatCurrency(approvedTotal)}</p>
             <p className="text-xs text-muted">💵 Aprobado</p>
           </div>
         </div>
@@ -97,7 +97,7 @@ export default function HomePage() {
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="font-bold">
-                    {formatUSD(calcTotals(q.items, q.taxRate).total)}
+                    {formatCurrency(calcTotals(q.items, q.taxRate).total, q.currency)}
                   </span>
                   <StatusBadge status={q.status} />
                 </div>

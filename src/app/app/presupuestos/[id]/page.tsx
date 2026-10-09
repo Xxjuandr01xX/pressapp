@@ -196,20 +196,20 @@ export default function QuoteDetailPage() {
   // ─── Render ──────────────────────────────────────────────
   return (
     <main className="flex flex-col gap-5 px-5 py-6">
-      {/* Header */}
-      <header className="flex items-center justify-between">
-        <button onClick={() => router.back()} className="text-navy font-bold text-lg">
-          ← Atrás
-        </button>
-        <button 
-          onClick={() => router.push(`/app/presupuestos/crear?cloneId=${quote.id}`)} 
-          className="flex items-center gap-2 rounded-xl bg-slate-100 px-3 py-1.5 text-sm font-bold text-navy active:bg-slate-200"
-        >
-          <Copy size={16} />
-          Duplicar
-        </button>
-      </header>
-        <div className="mt-2 flex items-center justify-between">
+      <header>
+        <div className="flex items-center justify-between">
+          <button onClick={() => router.back()} className="text-navy font-bold text-lg">
+            ← Atrás
+          </button>
+          <button 
+            onClick={() => router.push(`/app/presupuestos/crear?cloneId=${quote.id}`)} 
+            className="flex items-center gap-2 rounded-xl bg-slate-100 px-3 py-1.5 text-sm font-bold text-navy active:bg-slate-200"
+          >
+            <Copy size={16} />
+            Duplicar
+          </button>
+        </div>
+        <div className="mt-4 flex items-center justify-between">
           <div>
             <h1 className="text-xl font-extrabold">#{quote.quoteNumber}</h1>
             <p className="text-sm text-muted">{formattedDate}</p>

@@ -6,7 +6,7 @@ import { useAppContext } from "../layout";
 import { BigLink } from "@/components/ui/BigButton";
 import { StatusBadge } from "@/components/ui/Status";
 import { onQuotes } from "@/lib/firebase/store";
-import { calcTotals, formatUSD, DEFAULT_TAX_RATE } from "@/lib/quote";
+import { calcTotals, formatCurrency, DEFAULT_TAX_RATE } from "@/lib/quote";
 import type { Quote } from "@/types";
 import { Plus } from "lucide-react";
 
@@ -71,7 +71,7 @@ export default function PresupuestosPage() {
                     }).format(date) : "Reciente"}
                   </span>
                   <span className="font-extrabold text-navy text-lg">
-                    {formatUSD(totals.total)}
+                    {formatCurrency(totals.total, q.currency)}
                   </span>
                 </div>
               </a>
