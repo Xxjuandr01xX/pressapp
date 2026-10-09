@@ -7,7 +7,7 @@ import { useAppContext } from "../../layout";
 import { BigButton } from "@/components/ui/BigButton";
 import { StatusBadge } from "@/components/ui/Status";
 import { getQuote, updateQuote } from "@/lib/firebase/store";
-import { calcTotals, formatUSD, formatBs, DEFAULT_TAX_RATE, toWhatsAppNumber } from "@/lib/quote";
+import { calcTotals, formatCurrency, formatBs, DEFAULT_TAX_RATE, toWhatsAppNumber } from "@/lib/quote";
 import { TRADES } from "@/lib/templates";
 import { QuotePDF } from "@/lib/pdf/QuotePDF";
 import { pdf } from "@react-pdf/renderer";
@@ -242,11 +242,11 @@ export default function QuoteDetailPage() {
             <div className="flex-1">
               <p className="font-semibold">{item.description || "—"}</p>
               <p className="text-xs text-muted">
-                {item.quantity} {item.unit} × {formatUSD(item.unitPriceUSD)}
+                {item.quantity} {item.unit} × {formatCurrency(item.unitPriceUSD, quote.currency)}
               </p>
             </div>
             <span className="font-bold">
-              {formatUSD(item.quantity * item.unitPriceUSD)}
+              {formatCurrency(item.quantity * item.unitPriceUSD, quote.currency)}
             </span>
           </div>
         ))}
@@ -256,16 +256,16 @@ export default function QuoteDetailPage() {
       <section className="rounded-2xl bg-navy p-5 text-white">
         <div className="flex justify-between text-base">
           <span>Subtotal</span>
-          <span>{formatUSD(totals.subtotal)}</span>
+          <span>{formatCurrency(totals.subtotal, quote.currency)}</span>
         </div>
         <div className="flex justify-between text-base">
           <span>IVA ({Math.round((quote.taxRate || DEFAULT_TAX_RATE) * 100)}%)</span>
-          <span>{formatUSD(totals.tax)}</span>
+          <span>{formatCurrency(totals.tax, quote.currency)}</span>
         </div>
         <hr className="my-2 border-white/20" />
         <div className="flex justify-between text-xl font-extrabold">
           <span>TOTAL</span>
-          <span>{formatUSD(totals.total)}</span>
+          <span>{formatCurrency(totals.total, quote.currency)}</span>
         </div>
         {totals.totalBs && (
           <div className="flex justify-between text-sm mt-1 opacity-70">
