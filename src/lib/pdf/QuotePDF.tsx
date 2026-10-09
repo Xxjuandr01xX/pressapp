@@ -34,6 +34,7 @@ interface QuotePDFProps {
   themeColor?: string;
   quotePrefix?: string;
   currency?: "USD" | "EUR";
+  exchangeRate?: number;
 }
 
 // ─── Colores ───────────────────────────────────────────────
@@ -309,12 +310,13 @@ export function QuotePDF({
             {!showWatermark && logoUrl && (
               <Image src={logoUrl} style={{ width: 60, height: 60, objectFit: "contain" }} />
             )}
-            <View>
-              <Text style={[s.brandName, { color: dynamicColor }]}>{businessName}</Text>
-              {!showWatermark && razonSocial && <Text style={{ fontSize: 9, color: GRAY, marginTop: 2, fontFamily: "Helvetica-Bold" }}>{razonSocial}</Text>}
-              {!showWatermark && rifOrCedula && <Text style={{ fontSize: 9, color: GRAY, marginTop: 1 }}>RIF/C.I: {rifOrCedula}</Text>}
-              <Text style={s.brandTrade}>{tradeName}</Text>
-              <Text style={s.brandPhone}>📱 {businessPhone}</Text>
+            <View style={{ flex: 1, paddingTop: 4 }}>
+              <Text style={[s.brandName, { color: dynamicColor, marginBottom: 4 }]}>
+                {(!showWatermark && razonSocial) ? razonSocial : businessName}
+              </Text>
+              {!showWatermark && rifOrCedula && <Text style={{ fontSize: 9, color: GRAY, marginBottom: 4, fontFamily: "Helvetica-Bold" }}>RIF/C.I: {rifOrCedula}</Text>}
+              <Text style={{ fontSize: 10, color: GRAY, marginBottom: 2 }}>{tradeName}</Text>
+              <Text style={{ fontSize: 10, color: GRAY }}>📱 {businessPhone}</Text>
             </View>
           </View>
           <View style={s.headerRight}>
@@ -350,9 +352,16 @@ export function QuotePDF({
               <Text style={s.cellQty}>{item.quantity}</Text>
               <Text style={s.cellUnit}>{item.unit}</Text>
               <Text style={s.cellPrice}>{fmtCurrency(item.unitPriceUSD, currency)}</Text>
-              <Text style={s.cellTotal}>
-                {fmtCurrency(item.quantity * item.unitPriceUSD, currency)}
-              </Text>
+              <View style={s.cellTotal}>
+                <Text>
+                  {fmtCurrency(item.quantity * item.unitPriceUSD, currency)}
+                </Text>
+                {exchangeRate ? (
+                  <Text style={{ fontSize: 7, color: GRAY, marginTop: 2 }}>
+                    {fmtBs(item.quantity * item.unitPriceUSD * exchangeRate)}
+                  </Text>
+                ) : null}
+              </View>
             </View>
           ))}
         </View>

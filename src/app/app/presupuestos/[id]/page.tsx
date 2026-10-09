@@ -75,6 +75,7 @@ export default function QuoteDetailPage() {
           themeColor={business.themeColor}
           quotePrefix={business.quotePrefix}
           currency={quote.currency}
+          exchangeRate={quote.exchangeRate}
         />
       ).toBlob();
 
@@ -117,6 +118,7 @@ export default function QuoteDetailPage() {
           themeColor={business.themeColor}
           quotePrefix={business.quotePrefix}
           currency={quote.currency}
+          exchangeRate={quote.exchangeRate}
         />
       ).toBlob();
 

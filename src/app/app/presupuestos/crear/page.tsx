@@ -7,7 +7,7 @@ import { useAppContext } from "../../layout";
 import { BigButton } from "@/components/ui/BigButton";
 import { SYSTEM_TEMPLATES } from "@/lib/templates";
 import { calcTotals, formatCurrency, formatBs, DEFAULT_TAX_RATE } from "@/lib/quote";
-import { createQuote, getQuote } from "@/lib/firebase/store";
+import { createQuote, getQuote, onQuotes } from "@/lib/firebase/store";
 import type { QuoteItem, Quote } from "@/types";
 import { Minus, Plus, Trash2, Send } from "lucide-react";
 
@@ -35,6 +35,30 @@ export default function CrearPresupuestoPage() {
   const [apiRates, setApiRates] = useState<{ usd: number; eur: number }>({ usd: 0, eur: 0 });
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  
+  const [clientsList, setClientsList] = useState<{name: string, phone: string}[]>([]);
+
+  // Cargar lista de clientes
+  useEffect(() => {
+    if (!user || !business.id) return;
+    return onQuotes(user.uid, business.id, (quotesData) => {
+      const map = new Map<string, string>();
+      quotesData.forEach(q => {
+        if (q.clientName) {
+          const lower = q.clientName.trim().toLowerCase();
+          if (!map.has(lower) || (!map.get(lower) && q.clientPhone)) {
+            map.set(lower, q.clientPhone || "");
+          }
+        }
+      });
+      const uniques = Array.from(map.entries()).map(([name, phone]) => ({
+        // Capitalize client names properly from lower
+        name: quotesData.find(q => q.clientName?.toLowerCase() === name)?.clientName || name, 
+        phone 
+      }));
+      setClientsList(uniques);
+    });
+  }, [user, business.id]);
 
   // Consultar DolarAPI
   useEffect(() => {
@@ -197,10 +221,26 @@ export default function CrearPresupuestoPage() {
       {/* Cliente */}
       <section className="rounded-2xl bg-white p-4 shadow-sm">
         <h2 className="mb-3 text-sm font-bold uppercase text-muted">Cliente</h2>
+        
+        <datalist id="clients-list">
+          {clientsList.map((c, i) => (
+            <option key={i} value={c.name} />
+          ))}
+        </datalist>
+
         <input
           type="text"
+          list="clients-list"
           value={clientName}
-          onChange={(e) => setClientName(e.target.value)}
+          onChange={(e) => {
+            const val = e.target.value;
+            setClientName(val);
+            // Autocompletar teléfono si el cliente existe
+            const match = clientsList.find(c => c.name.toLowerCase() === val.toLowerCase());
+            if (match && match.phone && !clientPhone) {
+              setClientPhone(match.phone);
+            }
+          }}
           placeholder="Nombre del cliente (ej: Sra. María)"
           className="mb-2 w-full rounded-xl border-2 border-slate-200 px-4 py-3 text-base outline-none focus:border-navy"
         />
