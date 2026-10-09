@@ -6,9 +6,9 @@ import { useAuth } from "@/components/AuthProvider";
 import { useAppContext } from "../../layout";
 import { BigButton } from "@/components/ui/BigButton";
 import { SYSTEM_TEMPLATES } from "@/lib/templates";
-import { calcTotals, formatUSD, formatBs, DEFAULT_TAX_RATE } from "@/lib/quote";
-import { createQuote } from "@/lib/firebase/store";
-import type { QuoteItem } from "@/types";
+import { calcTotals, formatCurrency, formatBs, DEFAULT_TAX_RATE } from "@/lib/quote";
+import { createQuote, getQuote } from "@/lib/firebase/store";
+import type { QuoteItem, Quote } from "@/types";
 import { Minus, Plus, Trash2, Send } from "lucide-react";
 
 function generateQuoteNumber(): string {
@@ -23,25 +23,64 @@ export default function CrearPresupuestoPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const templateId = searchParams.get("template");
+  const cloneId = searchParams.get("cloneId");
 
   const [items, setItems] = useState<QuoteItem[]>([]);
   const [clientName, setClientName] = useState("");
   const [clientPhone, setClientPhone] = useState("");
   const [notes, setNotes] = useState("");
+  const [currency, setCurrency] = useState<"USD" | "EUR">("USD");
+  const [exchangeRate, setExchangeRate] = useState<number>(0);
+  
+  const [apiRates, setApiRates] = useState<{ usd: number; eur: number }>({ usd: 0, eur: 0 });
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
-  // Cargar plantilla si viene con template
+  // Consultar DolarAPI
+  useEffect(() => {
+    fetch("https://ve.dolarapi.com/v1/cotizaciones")
+      .then((res) => res.json())
+      .then((data: any[]) => {
+        const usdObj = data.find(d => d.moneda === "USD");
+        const eurObj = data.find(d => d.moneda === "EUR");
+        const rates = {
+          usd: usdObj?.promedio || 0,
+          eur: eurObj?.promedio || 0
+        };
+        setApiRates(rates);
+        // Set initial exchange rate based on current currency
+        setExchangeRate(prev => prev === 0 ? rates.usd : prev);
+      })
+      .catch((e) => console.error("Error obteniendo DolarAPI:", e));
+  }, []);
+
+  // Cambiar la tasa cuando cambia la moneda
+  useEffect(() => {
+    if (apiRates[currency.toLowerCase() as "usd" | "eur"] > 0) {
+      setExchangeRate(apiRates[currency.toLowerCase() as "usd" | "eur"]);
+    }
+  }, [currency, apiRates]);
+
+  // Cargar plantilla o clonar
   useEffect(() => {
     if (templateId) {
       const tpl = SYSTEM_TEMPLATES.find((t) => t.id === templateId);
-      if (tpl) {
-        setItems(tpl.items.map((i) => ({ ...i })));
-      }
+      if (tpl) setItems(tpl.items.map((i) => ({ ...i })));
+    } else if (cloneId && user) {
+      getQuote(user.uid, business.id, cloneId).then((q) => {
+        if (q) {
+          setClientName(q.clientName || "");
+          setClientPhone(q.clientPhone || "");
+          setNotes(q.notes || "");
+          if (q.currency) setCurrency(q.currency);
+          if (q.exchangeRate) setExchangeRate(q.exchangeRate);
+          setItems(q.items.map((i) => ({ ...i })));
+        }
+      });
     }
-  }, [templateId]);
+  }, [templateId, cloneId, user, business.id]);
 
-  const totals = calcTotals(items, DEFAULT_TAX_RATE);
+  const totals = calcTotals(items, DEFAULT_TAX_RATE, exchangeRate);
 
   function updateItem(index: number, patch: Partial<QuoteItem>) {
     setItems((prev) =>
@@ -70,6 +109,8 @@ export default function CrearPresupuestoPage() {
         status: sendNow ? "enviado" : "borrador",
         items,
         taxRate: DEFAULT_TAX_RATE,
+        currency,
+        exchangeRate,
       };
 
       if (clientPhone.trim()) quoteData.clientPhone = clientPhone.trim();
@@ -113,6 +154,45 @@ export default function CrearPresupuestoPage() {
       </header>
 
       <h1 className="text-xl font-extrabold">Arma tu presupuesto 📋</h1>
+
+      {/* Moneda y Tasa */}
+      <section className="rounded-2xl bg-white p-4 shadow-sm flex flex-col gap-3">
+        <div>
+          <h2 className="mb-2 text-sm font-bold uppercase text-muted">Cotizar en</h2>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setCurrency("USD")}
+              className={`flex-1 rounded-xl py-2 font-bold transition ${currency === "USD" ? "bg-navy text-white" : "bg-slate-100 text-slate-500"}`}
+            >
+              Dólares ($)
+            </button>
+            <button
+              onClick={() => setCurrency("EUR")}
+              className={`flex-1 rounded-xl py-2 font-bold transition ${currency === "EUR" ? "bg-navy text-white" : "bg-slate-100 text-slate-500"}`}
+            >
+              Euros (€)
+            </button>
+          </div>
+        </div>
+        
+        <div>
+          <label className="text-sm font-bold uppercase text-muted flex items-center justify-between mb-1">
+            <span>Tasa BCV Referencial</span>
+            {apiRates.usd === 0 ? <span className="text-xs text-orange-400">Cargando...</span> : <span className="text-xs text-green-500">Auto-actualizada</span>}
+          </label>
+          <div className="flex items-center rounded-xl border-2 border-slate-200 px-3">
+            <span className="text-muted font-bold">Bs.</span>
+            <input
+              type="number"
+              inputMode="decimal"
+              value={exchangeRate || ""}
+              onChange={(e) => setExchangeRate(Number(e.target.value))}
+              placeholder={`Ej: ${apiRates[currency.toLowerCase() as "usd" | "eur"] || 0}`}
+              className="w-full py-3 pl-2 font-bold outline-none text-right text-lg text-navy"
+            />
+          </div>
+        </div>
+      </section>
 
       {/* Cliente */}
       <section className="rounded-2xl bg-white p-4 shadow-sm">
@@ -205,7 +285,7 @@ export default function CrearPresupuestoPage() {
 
               {/* Precio */}
               <div className="flex min-w-[100px] flex-1 items-center rounded-xl border-2 border-slate-200 px-2">
-                <span className="text-muted text-sm">$</span>
+                <span className="text-muted text-sm font-bold">{currency === "EUR" ? "€" : "$"}</span>
                 <input
                   type="number"
                   inputMode="decimal"
@@ -258,16 +338,21 @@ export default function CrearPresupuestoPage() {
         <section className="rounded-2xl bg-navy p-5 text-white">
           <div className="flex justify-between text-base">
             <span>Subtotal</span>
-            <span>{formatUSD(totals.subtotal)}</span>
+            <span>{formatCurrency(totals.subtotal, currency)}</span>
           </div>
           <div className="flex justify-between text-base">
             <span>IVA (16%)</span>
-            <span>{formatUSD(totals.tax)}</span>
+            <span>{formatCurrency(totals.tax, currency)}</span>
           </div>
           <hr className="my-2 border-white/20" />
-          <div className="flex justify-between text-xl font-extrabold">
-            <span>TOTAL</span>
-            <span>{formatUSD(totals.total)}</span>
+          <div className="flex justify-between items-end">
+            <span className="text-xl font-extrabold">TOTAL</span>
+            <div className="text-right">
+              <div className="text-xl font-extrabold">{formatCurrency(totals.total, currency)}</div>
+              {totals.totalBs && exchangeRate > 0 && (
+                <div className="text-sm text-slate-300 mt-1">{formatBs(totals.totalBs)}</div>
+              )}
+            </div>
           </div>
         </section>
       )}

@@ -1,9 +1,9 @@
 "use client";
 
-import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { signInWithEmailAndPassword, signInWithRedirect, getRedirectResult, GoogleAuthProvider } from "firebase/auth";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { auth } from "@/lib/firebase/client";
 import { BigButton } from "@/components/ui/BigButton";
 import { Zap } from "lucide-react";
@@ -14,6 +14,18 @@ export default function Login() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+
+  // Manejar el retorno de Google
+  useEffect(() => {
+    getRedirectResult(auth).then((cred) => {
+      if (cred) {
+        router.push("/app");
+      }
+    }).catch((e) => {
+      console.error(e);
+      setError("Error al completar inicio de sesión con Google.");
+    });
+  }, [router]);
 
   const handleEmail = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,8 +44,8 @@ export default function Login() {
     setLoading(true);
     setError("");
     try {
-      await signInWithPopup(auth, new GoogleAuthProvider());
-      router.push("/app");
+      await signInWithRedirect(auth, new GoogleAuthProvider());
+      // No pusheamos aquí porque redireccionará la ventana entera.
     } catch {
       setError("Error al iniciar sesión con Google.");
       setLoading(false);

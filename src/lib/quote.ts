@@ -16,8 +16,9 @@ export function calcTotals(items: QuoteItem[], taxRate = DEFAULT_TAX_RATE, excha
   return { subtotal, tax, total, totalBs };
 }
 
-export function formatUSD(n: number): string {
-  return `$${n.toLocaleString("es-VE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+export function formatCurrency(n: number, currency: "USD" | "EUR" = "USD"): string {
+  const sym = currency === "EUR" ? "€" : "$";
+  return `${sym}${n.toLocaleString("es-VE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
 export function formatBs(n: number): string {

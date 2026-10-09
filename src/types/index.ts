@@ -70,6 +70,7 @@ export interface Quote {
   items: QuoteItem[];
   taxRate: number;
   exchangeRate?: number;
+  currency?: "USD" | "EUR";
   notes?: string;
   createdAt: DateLike;
   sentAt?: DateLike;

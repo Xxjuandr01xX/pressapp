@@ -33,6 +33,7 @@ interface QuotePDFProps {
   rifOrCedula?: string;
   themeColor?: string;
   quotePrefix?: string;
+  currency?: "USD" | "EUR";
 }
 
 // ─── Colores ───────────────────────────────────────────────
@@ -256,8 +257,9 @@ const s = StyleSheet.create({
 });
 
 // ─── Helpers ───────────────────────────────────────────────
-function fmtUSD(n: number): string {
-  return `$${n.toFixed(2)}`;
+function fmtCurrency(n: number, currency: "USD" | "EUR" = "USD"): string {
+  const symbol = currency === "EUR" ? "€" : "$";
+  return `${symbol}${n.toFixed(2)}`;
 }
 
 function fmtBs(n: number): string {
@@ -286,6 +288,7 @@ export function QuotePDF({
   rifOrCedula,
   themeColor,
   quotePrefix,
+  currency = "USD",
 }: QuotePDFProps) {
   const dynamicColor = (!showWatermark && themeColor) ? themeColor : NAVY;
   
@@ -346,9 +349,9 @@ export function QuotePDF({
               <Text style={s.cellDesc}>{item.description || "—"}</Text>
               <Text style={s.cellQty}>{item.quantity}</Text>
               <Text style={s.cellUnit}>{item.unit}</Text>
-              <Text style={s.cellPrice}>{fmtUSD(item.unitPriceUSD)}</Text>
+              <Text style={s.cellPrice}>{fmtCurrency(item.unitPriceUSD, currency)}</Text>
               <Text style={s.cellTotal}>
-                {fmtUSD(item.quantity * item.unitPriceUSD)}
+                {fmtCurrency(item.quantity * item.unitPriceUSD, currency)}
               </Text>
             </View>
           ))}
@@ -358,17 +361,17 @@ export function QuotePDF({
         <View style={s.totalsBox}>
           <View style={s.totalRow}>
             <Text style={s.totalLabel}>Subtotal</Text>
-            <Text style={s.totalValue}>{fmtUSD(subtotal)}</Text>
+            <Text style={s.totalValue}>{fmtCurrency(subtotal, currency)}</Text>
           </View>
           <View style={s.totalRow}>
             <Text style={s.totalLabel}>
               IVA ({Math.round(taxRate * 100)}%)
             </Text>
-            <Text style={s.totalValue}>{fmtUSD(tax)}</Text>
+            <Text style={s.totalValue}>{fmtCurrency(tax, currency)}</Text>
           </View>
           <View style={[s.totalFinal, { borderTopColor: dynamicColor }]}>
             <Text style={[s.totalFinalLabel, { color: dynamicColor }]}>TOTAL</Text>
-            <Text style={[s.totalFinalValue, { color: dynamicColor }]}>{fmtUSD(total)}</Text>
+            <Text style={[s.totalFinalValue, { color: dynamicColor }]}>{fmtCurrency(total, currency)}</Text>
           </View>
           {totalBs !== undefined && (
             <View style={s.totalBs}>

@@ -1,9 +1,9 @@
 "use client";
 
-import { createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithRedirect, getRedirectResult, GoogleAuthProvider } from "firebase/auth";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { auth } from "@/lib/firebase/client";
 import { BigButton } from "@/components/ui/BigButton";
 import { Zap } from "lucide-react";
@@ -23,6 +23,20 @@ export default function Registro() {
     });
     router.push("/app");
   }
+
+  // Manejar el retorno de Google
+  useEffect(() => {
+    getRedirectResult(auth).then(async (cred) => {
+      if (cred) {
+        setLoading(true);
+        const token = await cred.user.getIdToken();
+        await initUser(token);
+      }
+    }).catch((e) => {
+      console.error(e);
+      setError("Error al completar el registro con Google.");
+    });
+  }, []);
 
   const handleEmail = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,10 +58,8 @@ export default function Registro() {
     setLoading(true);
     setError("");
     try {
-      const p = new GoogleAuthProvider();
-      const cred = await signInWithPopup(auth, p);
-      const token = await cred.user.getIdToken();
-      await initUser(token);
+      await signInWithRedirect(auth, new GoogleAuthProvider());
+      // La página se redirigirá, el flujo continúa en getRedirectResult
     } catch {
       setError("Error con Google.");
       setLoading(false);
