@@ -290,6 +290,7 @@ export function QuotePDF({
   themeColor,
   quotePrefix,
   currency = "USD",
+  exchangeRate,
 }: QuotePDFProps) {
   const dynamicColor = (!showWatermark && themeColor) ? themeColor : NAVY;
   
