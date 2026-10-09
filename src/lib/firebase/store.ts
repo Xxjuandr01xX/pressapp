@@ -153,6 +153,16 @@ export async function getClientSubscription(uid: string) {
   } as any; // Matches Subscription interface
 }
 
+export async function getUserPayments(uid: string) {
+  const q = query(payCol(), where("userId", "==", uid), orderBy("createdAt", "desc"));
+  const snap = await getDocs(q);
+  return snap.docs.map(d => ({
+    id: d.id,
+    ...d.data(),
+    createdAt: d.data().createdAt?.toDate()
+  })) as any[];
+}
+
 export async function submitPayment(
   uid: string,
   email: string,

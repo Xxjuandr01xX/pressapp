@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useAuth } from "@/components/AuthProvider";
 import { useAppContext } from "../layout";
 import { BigButton } from "@/components/ui/BigButton";
 import { auth } from "@/lib/firebase/client";
-import { updateBusiness } from "@/lib/firebase/store";
+import { updateBusiness, getUserPayments } from "@/lib/firebase/store";
 import { TRADES } from "@/lib/templates";
 import { LogOut, Save } from "lucide-react";
 
@@ -18,6 +19,13 @@ export default function MiNegocioPage() {
   const [name, setName] = useState(business.businessName);
   const [phone, setPhone] = useState(business.phone);
   const [saving, setSaving] = useState(false);
+  const [payments, setPayments] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (user) {
+      getUserPayments(user.uid).then(setPayments);
+    }
+  }, [user]);
 
   const tradeMeta = TRADES.find((t) => t.id === business.trade);
 
@@ -84,23 +92,44 @@ export default function MiNegocioPage() {
         </BigButton>
       </section>
 
-      {/* Suscripción */}
-      <section className="flex flex-col gap-3 rounded-2xl border-2 border-navy/10 bg-navy/5 p-5">
-        <h2 className="text-sm font-bold uppercase text-navy">Mi Suscripción</h2>
-        <div className="flex justify-between items-center">
-          <span className="font-bold">
-            {status === "active" ? "Plan Premium" : "Plan Trial (15 días)"}
-          </span>
-          <span className={`rounded-full px-3 py-1 text-xs font-extrabold ${status === "active" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}>
-            {status === "active" ? "ACTIVO" : "DE PRUEBA"}
-          </span>
+      {/* Suscripción e Historial */}
+      <section className="flex flex-col gap-4">
+        <div className="flex flex-col gap-3 rounded-2xl border-2 border-navy/10 bg-navy/5 p-5">
+          <h2 className="text-sm font-bold uppercase text-navy">Mi Suscripción</h2>
+          <div className="flex justify-between items-center">
+            <span className="font-bold">
+              {status === "active" ? "Plan Premium" : "Plan Trial (15 días)"}
+            </span>
+            <span className={`rounded-full px-3 py-1 text-xs font-extrabold ${status === "active" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}>
+              {status === "active" ? "ACTIVO" : "DE PRUEBA"}
+            </span>
+          </div>
+          
+          <Link href="/app/suscripcion" className="mt-2 block w-full rounded-xl bg-navy py-3 text-center font-bold text-white shadow-sm active:scale-95 transition-transform">
+            {status === "active" ? "Extender Suscripción" : "Pagar Suscripción"}
+          </Link>
         </div>
-        {status === "active" ? (
-          <p className="text-xs text-muted">
-            Tu suscripción está activa. ¡Gracias por usar Press!
-          </p>
-        ) : (
-          <p className="text-xs text-muted">Próximamente podrás ver tus pagos aquí.</p>
+
+        {/* Historial de pagos */}
+        {payments.length > 0 && (
+          <div className="rounded-2xl border-2 border-slate-100 bg-white p-5">
+            <h3 className="mb-3 text-sm font-bold uppercase text-muted">Historial de pagos</h3>
+            <div className="flex flex-col gap-3">
+              {payments.map(p => (
+                <div key={p.id} className="flex justify-between items-center border-b border-slate-100 pb-2 last:border-0 last:pb-0">
+                  <div className="flex flex-col">
+                    <span className="font-bold text-sm text-navy">{p.amount} {p.currency}</span>
+                    <span className="text-xs text-muted">
+                      {p.createdAt ? new Intl.DateTimeFormat("es-VE", { day: "2-digit", month: "short", year: "numeric" }).format(p.createdAt) : "Reciente"}
+                    </span>
+                  </div>
+                  <span className={`text-xs font-bold ${p.status === "success" ? "text-green-600" : p.status === "rejected" ? "text-red-500" : "text-yellow-600"}`}>
+                    {p.status === "success" ? "Aprobado" : p.status === "rejected" ? "Rechazado" : "Pendiente"}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
         )}
       </section>
 

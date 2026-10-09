@@ -23,6 +23,11 @@ export const TRADES: { id: Trade; label: string; emoji: string }[] = [
   { id: "albanileria", label: "Albañilería", emoji: "🧱" },
   { id: "herreria", label: "Herrería", emoji: "🔩" },
   { id: "refrigeracion", label: "Refrigeración", emoji: "❄️" },
+  { id: "computacion", label: "Computación", emoji: "💻" },
+  { id: "celulares", label: "Celulares", emoji: "📱" },
+  { id: "electronica", label: "Electrónica", emoji: "🔌" },
+  { id: "redes", label: "Redes y Telecom.", emoji: "🌐" },
+  { id: "sistemas", label: "Sistemas informáticos", emoji: "🖥️" },
   { id: "general", label: "Otro oficio", emoji: "🛠️" },
 ];
 

@@ -6,6 +6,11 @@ export type Trade =
   | "albanileria"
   | "herreria"
   | "refrigeracion"
+  | "computacion"
+  | "celulares"
+  | "electronica"
+  | "redes"
+  | "sistemas"
   | "general";
 
 export type ItemCategory = "material" | "mano_de_obra" | "servicio";

@@ -156,7 +156,7 @@ export default function CrearPresupuestoPage() {
               className="mb-2 w-full rounded-xl border-2 border-slate-200 px-3 py-2 text-base outline-none focus:border-navy"
             />
 
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               {/* Cantidad con +/- */}
               <div className="flex items-center gap-1 rounded-xl border-2 border-slate-200 px-1">
                 <button
@@ -204,7 +204,7 @@ export default function CrearPresupuestoPage() {
               </select>
 
               {/* Precio */}
-              <div className="flex flex-1 items-center rounded-xl border-2 border-slate-200 px-2">
+              <div className="flex min-w-[100px] flex-1 items-center rounded-xl border-2 border-slate-200 px-2">
                 <span className="text-muted text-sm">$</span>
                 <input
                   type="number"
