@@ -69,11 +69,17 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     <AppCtx.Provider value={{ business, subscription, status }}>
       <div className="mx-auto flex min-h-dvh w-full max-w-md flex-col pb-20">
         
-        {/* Banner de Trial / Gracia */}
-        {status === "trial" && left <= 5 && !isSubscriptionPage && (
-          <div className="bg-accent text-ink px-4 py-2 text-center text-sm font-bold shadow-sm">
-            Te quedan {left} {left === 1 ? "día" : "días"} de prueba gratis. 
-            <Link href="/app/suscripcion" className="ml-2 underline">Ver planes</Link>
+        {/* Banner de Alertas */}
+        {status === "trial" && left <= 4 && !isSubscriptionPage && (
+          <div className="bg-accent text-navy px-4 py-2 text-center text-sm font-bold shadow-sm">
+            Te quedan {left} {left === 1 ? "día" : "días"} de prueba. 
+            <Link href="/app/suscripcion" className="ml-2 underline">Activar Premium</Link>
+          </div>
+        )}
+        {status === "active" && left <= 4 && !isSubscriptionPage && (
+          <div className="bg-orange-500 text-white px-4 py-2 text-center text-sm font-bold shadow-sm">
+            ⚠️ Tu suscripción vence en {left} {left === 1 ? "día" : "días"}. 
+            <Link href="/app/suscripcion" className="ml-2 underline">Renovar ahora</Link>
           </div>
         )}
         
