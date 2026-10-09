@@ -307,11 +307,11 @@ export function QuotePDF({
 
         {/* ─── Header ─── */}
         <View style={[s.header, { borderBottomColor: dynamicColor }]}>
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+          <View style={{ flexDirection: "row", alignItems: "center", flex: 1 }}>
             {!showWatermark && logoUrl && (
-              <Image src={logoUrl} style={{ width: 60, height: 60, objectFit: "contain" }} />
+              <Image src={logoUrl} style={{ width: 60, height: 60, objectFit: "contain", marginRight: 12 }} />
             )}
-            <View style={{ flex: 1, paddingTop: 4 }}>
+            <View style={{ paddingTop: 4, flex: 1 }}>
               <Text style={[s.brandName, { color: dynamicColor, marginBottom: 4 }]}>
                 {(!showWatermark && razonSocial) ? razonSocial : businessName}
               </Text>
