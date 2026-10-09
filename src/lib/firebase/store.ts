@@ -155,13 +155,21 @@ export async function getClientSubscription(uid: string) {
 }
 
 export async function getUserPayments(uid: string) {
-  const q = query(payCol(), where("userId", "==", uid), orderBy("createdAt", "desc"));
+  // Quitamos orderBy para no forzar al usuario a crear un índice compuesto en Firestore
+  const q = query(payCol(), where("userId", "==", uid));
   const snap = await getDocs(q);
-  return snap.docs.map(d => ({
+  const docs = snap.docs.map(d => ({
     id: d.id,
     ...d.data(),
     createdAt: d.data().createdAt?.toDate()
   })) as any[];
+
+  // Ordenamos del más reciente al más antiguo localmente
+  return docs.sort((a, b) => {
+    const tA = a.createdAt?.getTime() || 0;
+    const tB = b.createdAt?.getTime() || 0;
+    return tB - tA;
+  });
 }
 
 export async function submitPayment(
