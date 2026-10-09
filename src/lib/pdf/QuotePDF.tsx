@@ -7,6 +7,7 @@ import {
   View,
   StyleSheet,
   Font,
+  Image,
 } from "@react-pdf/renderer";
 import type { QuoteItem } from "@/types";
 
@@ -27,6 +28,11 @@ interface QuotePDFProps {
   notes?: string;
   date: string;
   showWatermark?: boolean;
+  logoUrl?: string;
+  razonSocial?: string;
+  rifOrCedula?: string;
+  themeColor?: string;
+  quotePrefix?: string;
 }
 
 // ─── Colores ───────────────────────────────────────────────
@@ -275,7 +281,14 @@ export function QuotePDF({
   notes,
   date,
   showWatermark = true,
+  logoUrl,
+  razonSocial,
+  rifOrCedula,
+  themeColor,
+  quotePrefix,
 }: QuotePDFProps) {
+  const dynamicColor = (!showWatermark && themeColor) ? themeColor : NAVY;
+  
   return (
     <Document>
       <Page size="LETTER" style={s.page}>
@@ -288,15 +301,22 @@ export function QuotePDF({
         )}
 
         {/* ─── Header ─── */}
-        <View style={s.header}>
-          <View>
-            <Text style={s.brandName}>{businessName}</Text>
-            <Text style={s.brandTrade}>{tradeName}</Text>
-            <Text style={s.brandPhone}>📱 {businessPhone}</Text>
+        <View style={[s.header, { borderBottomColor: dynamicColor }]}>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+            {!showWatermark && logoUrl && (
+              <Image src={logoUrl} style={{ width: 60, height: 60, objectFit: "contain" }} />
+            )}
+            <View>
+              <Text style={[s.brandName, { color: dynamicColor }]}>{businessName}</Text>
+              {!showWatermark && razonSocial && <Text style={{ fontSize: 9, color: GRAY, marginTop: 2, fontFamily: "Helvetica-Bold" }}>{razonSocial}</Text>}
+              {!showWatermark && rifOrCedula && <Text style={{ fontSize: 9, color: GRAY, marginTop: 1 }}>RIF/C.I: {rifOrCedula}</Text>}
+              <Text style={s.brandTrade}>{tradeName}</Text>
+              <Text style={s.brandPhone}>📱 {businessPhone}</Text>
+            </View>
           </View>
           <View style={s.headerRight}>
-            <Text style={s.quoteLabel}>PRESUPUESTO</Text>
-            <Text style={s.quoteNumber}>#{quoteNumber}</Text>
+            <Text style={[s.quoteLabel, { color: dynamicColor }]}>PRESUPUESTO</Text>
+            <Text style={s.quoteNumber}>#{!showWatermark && quotePrefix ? quotePrefix : ""}{quoteNumber}</Text>
             <Text style={s.quoteDate}>{date}</Text>
           </View>
         </View>
@@ -310,7 +330,7 @@ export function QuotePDF({
 
         {/* ─── Tabla ─── */}
         <View style={s.table}>
-          <View style={s.tableHeader}>
+          <View style={[s.tableHeader, { backgroundColor: dynamicColor }]}>
             <Text style={[s.tableHeaderText, s.cellDesc]}>Descripción</Text>
             <Text style={[s.tableHeaderText, s.cellQty]}>Cant.</Text>
             <Text style={[s.tableHeaderText, s.cellUnit]}>Unidad</Text>
@@ -346,9 +366,9 @@ export function QuotePDF({
             </Text>
             <Text style={s.totalValue}>{fmtUSD(tax)}</Text>
           </View>
-          <View style={s.totalFinal}>
-            <Text style={s.totalFinalLabel}>TOTAL</Text>
-            <Text style={s.totalFinalValue}>{fmtUSD(total)}</Text>
+          <View style={[s.totalFinal, { borderTopColor: dynamicColor }]}>
+            <Text style={[s.totalFinalLabel, { color: dynamicColor }]}>TOTAL</Text>
+            <Text style={[s.totalFinalValue, { color: dynamicColor }]}>{fmtUSD(total)}</Text>
           </View>
           {totalBs !== undefined && (
             <View style={s.totalBs}>

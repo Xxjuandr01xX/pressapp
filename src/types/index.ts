@@ -38,6 +38,9 @@ export interface Business {
   logoUrl?: string;
   address?: string;
   rifOrCedula?: string;
+  razonSocial?: string;
+  quotePrefix?: string;
+  themeColor?: string;
 }
 
 export interface Client {

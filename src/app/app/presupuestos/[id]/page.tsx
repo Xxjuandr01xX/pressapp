@@ -69,6 +69,11 @@ export default function QuoteDetailPage() {
           notes={quote.notes}
           date={formattedDate}
           showWatermark={isTrial}
+          logoUrl={business.logoUrl}
+          razonSocial={business.razonSocial}
+          rifOrCedula={business.rifOrCedula}
+          themeColor={business.themeColor}
+          quotePrefix={business.quotePrefix}
         />
       ).toBlob();
 
@@ -105,6 +110,11 @@ export default function QuoteDetailPage() {
           notes={quote.notes}
           date={formattedDate}
           showWatermark={isTrial}
+          logoUrl={business.logoUrl}
+          razonSocial={business.razonSocial}
+          rifOrCedula={business.rifOrCedula}
+          themeColor={business.themeColor}
+          quotePrefix={business.quotePrefix}
         />
       ).toBlob();
 
