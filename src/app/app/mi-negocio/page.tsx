@@ -204,7 +204,7 @@ export default function MiNegocioPage() {
         </div>
         
         {isPremium && (
-          <BigButton onClick={handleSave} disabled={saving} variant="outline">
+          <BigButton onClick={handleSave} disabled={saving} variant="ghost">
             {saving ? "Guardando..." : "Guardar identidad"}
           </BigButton>
         )}
