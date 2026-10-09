@@ -39,14 +39,23 @@ export default function SuperAdminPanel() {
       setPending(pSnap.docs.map(d => ({ id: d.id, ...d.data() })));
       setSuccess(sSnap.docs.map(d => ({ id: d.id, ...d.data() })));
 
-      // Cargar suscripciones y negocios
+      // Cargar suscripciones, usuarios (para emails) y negocios (con collectionGroup)
       const subSnap = await getDocs(collection(db, "subscriptions"));
-      const bizSnap = await getDocs(collection(db, "businesses"));
+      const usersSnap = await getDocs(collection(db, "users"));
+      
+      // Importante: collectionGroup busca todas las subcolecciones llamadas "businesses"
+      const { collectionGroup } = await import("firebase/firestore");
+      const bizSnap = await getDocs(collectionGroup(db, "businesses"));
 
       const bizMap = new Map();
       bizSnap.docs.forEach(d => {
         const data = d.data();
-        bizMap.set(data.userId, data);
+        if (data.userId) bizMap.set(data.userId, data);
+      });
+
+      const usersMap = new Map();
+      usersSnap.docs.forEach(d => {
+        usersMap.set(d.id, d.data());
       });
 
       const list = subSnap.docs.map(d => {
@@ -58,9 +67,12 @@ export default function SuperAdminPanel() {
           currentPeriodEnd: data.currentPeriodEnd?.toDate(),
         };
         const biz = bizMap.get(data.userId);
+        const u = usersMap.get(data.userId);
+        
         return {
           userId: data.userId,
-          businessName: biz?.businessName || "Sin Nombre",
+          email: u?.email || "Sin email registrado",
+          businessName: biz?.businessName || "Sin Nombre de Negocio",
           phone: biz?.phone || "Sin Teléfono",
           status: resolveStatus(sub),
           days: daysLeft(sub),
@@ -265,7 +277,8 @@ export default function SuperAdminPanel() {
                 u.status === "trial" ? "border-l-blue-400" : 
                 "border-l-red-500"
               }`}>
-                <p className="font-bold text-lg">{u.businessName}</p>
+                <p className="font-bold text-lg">{u.email}</p>
+                <p className="text-gray-600 font-semibold text-sm">💼 {u.businessName}</p>
                 <p className="text-gray-500 text-sm">📞 {u.phone}</p>
                 <p className="text-xs text-gray-400 font-mono mt-1 mb-2">UID: {u.userId}</p>
                 
