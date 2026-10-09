@@ -308,7 +308,7 @@ export default function CrearPresupuestoPage() {
 
             {/* Subtotal de línea */}
             <p className="mt-2 text-right text-sm font-semibold text-muted">
-              Subtotal: {formatUSD(item.quantity * item.unitPriceUSD)}
+              Subtotal: {formatCurrency(item.quantity * item.unitPriceUSD, currency)}
             </p>
           </div>
         ))}

@@ -124,7 +124,7 @@ export default function QuoteDetailPage() {
 
       // Mensaje de texto base
       const msg = encodeURIComponent(
-        `Hola ${quote.clientName}! 👋\n\nTe envío tu presupuesto de *${business.businessName}*.\n\n📋 Presupuesto #${quote.quoteNumber}\n💵 Total: *${formatUSD(totals.total)}*\n\nTe adjunto el PDF. ¡Quedo atento!\n\n_Generado con Press_`
+        `Hola ${quote.clientName}! 👋\n\nTe envío tu presupuesto de *${business.businessName}*.\n\n📋 Presupuesto #${quote.quoteNumber}\n💵 Total: *${formatCurrency(totals.total, quote.currency)}*\n\nTe adjunto el PDF. ¡Quedo atento!\n\n_Generado con Press_`
       );
       
       const waNumber = quote.clientPhone ? toWhatsAppNumber(quote.clientPhone) : "";
@@ -134,7 +134,7 @@ export default function QuoteDetailPage() {
       if (navigator.canShare && navigator.canShare({ files: [file] }) && /Mobi|Android/i.test(navigator.userAgent)) {
         await navigator.share({
           title: `Presupuesto ${quote.quoteNumber}`,
-          text: `Presupuesto de ${business.businessName} para ${quote.clientName} — ${formatUSD(totals.total)}`,
+          text: `Presupuesto de ${business.businessName} para ${quote.clientName} — ${formatCurrency(totals.total, quote.currency)}`,
           files: [file],
         });
       } else {
