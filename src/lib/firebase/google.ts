@@ -28,6 +28,8 @@ export async function signInWithGoogle(): Promise<UserCredential | null> {
 /** Mensaje legible para errores comunes de Firebase Auth con Google. */
 export function googleErrorMessage(err: any): string {
   switch (err?.code) {
+    case "auth/operation-not-allowed":
+      return "El acceso con Google no está habilitado. Contacta al administrador.";
     case "auth/unauthorized-domain":
       return "Este dominio no está autorizado en Firebase. Agrégalo en Authentication > Settings > Authorized domains.";
     case "auth/account-exists-with-different-credential":
