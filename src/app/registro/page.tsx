@@ -1,6 +1,7 @@
 "use client";
 
-import { createUserWithEmailAndPassword, signInWithRedirect, getRedirectResult, GoogleAuthProvider } from "firebase/auth";
+import { createUserWithEmailAndPassword, getRedirectResult } from "firebase/auth";
+import { signInWithGoogle, googleErrorMessage } from "@/lib/firebase/google";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -34,7 +35,7 @@ export default function Registro() {
       }
     }).catch((e) => {
       console.error(e);
-      setError("Error al completar el registro con Google.");
+      setError(googleErrorMessage(e));
     });
   }, []);
 
@@ -58,10 +59,16 @@ export default function Registro() {
     setLoading(true);
     setError("");
     try {
-      await signInWithRedirect(auth, new GoogleAuthProvider());
-      // La página se redirigirá, el flujo continúa en getRedirectResult
-    } catch {
-      setError("Error con Google.");
+      const cred = await signInWithGoogle();
+      if (cred) {
+        const token = await cred.user.getIdToken();
+        await initUser(token);
+      } else {
+        setLoading(false);
+      }
+    } catch (err) {
+      console.error(err);
+      setError(googleErrorMessage(err));
       setLoading(false);
     }
   };

@@ -1,6 +1,7 @@
 "use client";
 
-import { signInWithEmailAndPassword, signInWithRedirect, getRedirectResult, GoogleAuthProvider } from "firebase/auth";
+import { signInWithEmailAndPassword, getRedirectResult } from "firebase/auth";
+import { signInWithGoogle, googleErrorMessage } from "@/lib/firebase/google";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -23,7 +24,7 @@ export default function Login() {
       }
     }).catch((e) => {
       console.error(e);
-      setError("Error al completar inicio de sesión con Google.");
+      setError(googleErrorMessage(e));
     });
   }, [router]);
 
@@ -44,10 +45,15 @@ export default function Login() {
     setLoading(true);
     setError("");
     try {
-      await signInWithRedirect(auth, new GoogleAuthProvider());
-      // No pusheamos aquí porque redireccionará la ventana entera.
-    } catch {
-      setError("Error al iniciar sesión con Google.");
+      const cred = await signInWithGoogle();
+      if (cred) {
+        router.push("/app");
+      } else {
+        setLoading(false);
+      }
+    } catch (err) {
+      console.error(err);
+      setError(googleErrorMessage(err));
       setLoading(false);
     }
   };
