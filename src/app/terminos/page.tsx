@@ -24,8 +24,8 @@ export default function Terminos() {
       <h2>3. Prueba gratuita y pagos</h2>
       <p>
         Las cuentas nuevas reciben 15 días de prueba con acceso completo. Luego, el acceso cuesta 10 USDT o 10 USDC por
-        cada periodo de 30 días, pagados por Binance. El acceso se activa cuando el pago es verificado. Los pagos no son
-        reembolsables una vez iniciado el periodo. Sin pago vigente, la cuenta queda en modo de solo lectura.
+        pago único, pagado por Binance, que otorga acceso Premium de por vida. El acceso se activa cuando el pago es verificado. Los pagos no son
+        reembolsables. Sin el pago, al terminar la prueba la cuenta queda en modo de solo lectura.
       </p>
       <h2>4. Licencia y propiedad intelectual</h2>
       <p>

@@ -24,43 +24,46 @@ export function newTrial(userId: string, now = new Date()): Subscription {
 
 /** Calcula el estado real de la suscripción a partir de sus fechas. */
 export function resolveStatus(sub: Subscription, now = new Date()): SubscriptionStatus {
+  // Pago único → Premium de por vida
+  if (sub.lifetime) return "active";
+
   const t = now.getTime();
 
+  // Compatibilidad con pagos mensuales antiguos
   if (sub.currentPeriodEnd) {
     const end = sub.currentPeriodEnd.getTime();
     if (t < end) return "active";
     if (t < end + GRACE_DAYS * DAY_MS) return "grace_period";
-    if (t < end + BLOCK_AFTER_DAYS * DAY_MS) return "expired";
-    return "blocked";
+    return "expired";
   }
 
   const trialEnd = sub.trialExpiresAt.getTime();
   if (t < trialEnd) return "trial";
-  if (t < trialEnd + BLOCK_AFTER_DAYS * DAY_MS) return "trial_expired";
-  return "blocked";
+  return "trial_expired";
 }
 
-/** Puede crear y enviar presupuestos. */
+/** Puede crear y enviar presupuestos (solo durante los 15 días o siendo Premium). */
 export function canWrite(status: SubscriptionStatus): boolean {
   return status === "trial" || status === "active" || status === "grace_period";
 }
 
+/** Es Premium (funcionalidad completa). */
+export function isPremium(sub: Subscription | null, now = new Date()): boolean {
+  return !!sub && resolveStatus(sub, now) === "active";
+}
+
 export function daysLeft(sub: Subscription, now = new Date()): number {
+  if (sub.lifetime) return Infinity;
   const end = sub.currentPeriodEnd ?? sub.trialExpiresAt;
   return Math.max(0, Math.ceil((end.getTime() - now.getTime()) / DAY_MS));
 }
 
-/**
- * Aplica un pago aprobado: suma 30 días desde el fin del periodo vigente
- * (si aún no venció) o desde hoy.
- */
-export function applyPayment(sub: Subscription, paymentId: string, now = new Date()): Subscription {
-  const currentEnd = sub.currentPeriodEnd ?? sub.trialExpiresAt;
-  const base = currentEnd.getTime() > now.getTime() ? currentEnd : now;
+/** Aplica el pago único aprobado: activa Premium de por vida. */
+export function applyPayment(sub: Subscription, paymentId: string): Subscription {
   return {
     ...sub,
     status: "active",
-    currentPeriodEnd: addDays(base, PERIOD_DAYS),
+    lifetime: true,
     lastPaymentId: paymentId,
     consecutiveMonths: sub.consecutiveMonths + 1,
   };

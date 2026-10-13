@@ -154,7 +154,7 @@ export default function SuperAdminPanel() {
   }
 
   async function manualApprove(userId: string) {
-    if (!confirm("¿Añadir 30 días manualmente a este usuario?")) return;
+    if (!confirm("¿Activar Premium de por vida (pago único) a este usuario?")) return;
     try {
       const subRef = doc(db, "subscriptions", userId);
       const subSnap = await getDoc(subRef);
@@ -168,7 +168,7 @@ export default function SuperAdminPanel() {
         currentPeriodEnd: d.currentPeriodEnd?.toDate(),
       };
       
-      // Simular un pago manual agregando 30 días
+      // Pago único manual → Premium de por vida
       const fakePaymentId = "manual_" + Date.now();
       const updatedSub = applyPayment(currentSub, fakePaymentId);
       
@@ -179,7 +179,7 @@ export default function SuperAdminPanel() {
         currentPeriodEnd: updatedSub.currentPeriodEnd,
       });
 
-      alert("Suscripción renovada manualmente por 30 días.");
+      alert("Premium de por vida activado.");
       loadData();
     } catch (e: any) {
       alert("Error: " + e.message);
@@ -195,6 +195,7 @@ export default function SuperAdminPanel() {
       pastDate.setDate(pastDate.getDate() - 1);
       
       await updateDoc(subRef, {
+        lifetime: false,
         currentPeriodEnd: pastDate,
         trialExpiresAt: pastDate
       });
@@ -287,12 +288,12 @@ export default function SuperAdminPanel() {
                     u.status === "active" ? "text-green-600" : 
                     u.status === "trial" ? "text-blue-600" : "text-red-500"
                   }`}>{u.status}</span>
-                  <span className="text-sm font-bold text-slate-600">{u.days} días left</span>
+                  <span className="text-sm font-bold text-slate-600">{u.sub.lifetime ? "♾️ De por vida" : `${u.days} días restantes`}</span>
                 </div>
 
                 <div className="flex gap-2">
                   <button onClick={() => manualApprove(u.userId)} className="flex-1 rounded-lg bg-navy py-2 text-xs font-bold text-white active:bg-blue-800">
-                    +30 Días
+                    Activar de por vida
                   </button>
                   <button onClick={() => revokeService(u.userId)} className="flex-1 rounded-lg bg-red-100 py-2 text-xs font-bold text-red-600 active:bg-red-200">
                     Cortar Servicio

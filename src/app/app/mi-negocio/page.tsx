@@ -121,7 +121,7 @@ export default function MiNegocioPage() {
           <div className="absolute inset-0 bg-white/60 backdrop-blur-sm z-10 flex flex-col items-center justify-center p-6 text-center">
             <span className="text-4xl mb-2">⭐</span>
             <h3 className="font-extrabold text-navy text-lg">Función Premium</h3>
-            <p className="text-sm text-muted mt-1 mb-3">Activa tu suscripción para personalizar tu negocio con logos, RIF, colores y correlativos.</p>
+            <p className="text-sm text-muted mt-1 mb-3">Activa Premium con un pago único para personalizar tu negocio con logos, RIF, colores y correlativos.</p>
             <Link href="/app/suscripcion" className="rounded-xl bg-accent px-4 py-2 font-bold text-navy shadow-sm">
               Mejorar plan
             </Link>
@@ -224,7 +224,7 @@ export default function MiNegocioPage() {
           </div>
           
           <Link href="/app/suscripcion" className="mt-2 block w-full rounded-xl bg-navy py-3 text-center font-bold text-white shadow-sm active:scale-95 transition-transform">
-            {status === "active" ? "Extender Suscripción" : "Pagar Suscripción"}
+            {status === "active" ? "Premium de por vida ✓" : "Activar Premium (pago único)"}
           </Link>
         </div>
 

@@ -48,7 +48,7 @@ export default function Landing() {
       <section className="rounded-2xl bg-navy p-6 text-center text-white">
         <p className="text-lg">Después de la prueba</p>
         <p className="text-4xl font-extrabold">{PRICE_USD} USDT</p>
-        <p className="text-lg">al mes · pagas con Binance · sin límites</p>
+        <p className="text-lg">pago único · Premium para siempre · sin mensualidades</p>
       </section>
 
       <footer className="flex justify-center gap-6 pb-4 text-muted">

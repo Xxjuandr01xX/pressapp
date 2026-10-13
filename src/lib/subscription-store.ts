@@ -60,7 +60,7 @@ export async function approvePayment(paymentId: string, reviewer: string) {
     const updated = applyPayment(current, paymentId);
     tx.set(subRef, toStored(updated));
     tx.update(payRef, { status: "success", reviewedAt: FieldValue.serverTimestamp(), reviewedBy: reviewer });
-    return { already: false, email: p.userEmail as string, until: updated.currentPeriodEnd! };
+    return { already: false, email: p.userEmail as string, until: updated.currentPeriodEnd };
   });
 }
 

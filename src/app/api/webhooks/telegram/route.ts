@@ -24,7 +24,7 @@ export async function POST(req: Request) {
       const res = await approvePayment(paymentId, reviewer);
       const txt = res.already
         ? `⚠️ Pago de ${res.email} ya estaba aprobado.`
-        : `✅ Aprobado por ${reviewer}. Suscripción de ${res.email} activa hasta ${res.until?.toLocaleDateString("es-VE")}.`;
+        : `✅ Aprobado por ${reviewer}. Suscripción de ${res.email} activada de por vida (pago único).`;
       await answerCallback(cb.id, "Aprobado");
       await sendText(txt);
     } else if (action === "reject") {

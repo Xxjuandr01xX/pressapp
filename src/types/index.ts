@@ -85,6 +85,8 @@ export interface Subscription {
   currentPeriodEnd?: Date;
   lastPaymentId?: string;
   consecutiveMonths: number;
+  /** Pago único: acceso Premium de por vida. */
+  lifetime?: boolean;
 }
 
 export interface Payment {

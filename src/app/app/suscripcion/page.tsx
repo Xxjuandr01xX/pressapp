@@ -70,12 +70,12 @@ export default function SuscripcionPage() {
           ← Atrás
         </button>
         <h1 className="mt-2 text-2xl font-extrabold text-navy">Activar Press 🚀</h1>
-        <p className="text-muted">Crea presupuestos ilimitados y guárdalos para siempre.</p>
+        <p className="text-muted">Un solo pago y Premium para siempre. Sin mensualidades.</p>
       </header>
 
       <section className="rounded-2xl border-2 border-navy bg-navy/5 p-5 text-center">
-        <p className="text-sm font-bold uppercase text-navy">Plan Profesional</p>
-        <p className="mt-1 text-5xl font-extrabold text-navy">${PRICE_USD} <span className="text-xl">/mes</span></p>
+        <p className="text-sm font-bold uppercase text-navy">Plan Premium de por vida</p>
+        <p className="mt-1 text-5xl font-extrabold text-navy">${PRICE_USD} <span className="text-xl">pago único</span></p>
         <p className="mt-2 text-sm text-slate-600">Pagas en USDT o USDC vía Binance</p>
       </section>
 

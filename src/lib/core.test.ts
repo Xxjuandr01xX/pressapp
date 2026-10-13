@@ -12,13 +12,12 @@ describe("suscripción", () => {
     expect(daysLeft(s, addDays(start, 10))).toBe(5);
   });
 
-  it("pago da 30 días y suma al tiempo restante", () => {
+  it("pago único da Premium de por vida", () => {
     const s = newTrial("u1", start);
-    const paid = applyPayment(s, "p1", addDays(start, 5)); // quedan 10 días de trial
+    const paid = applyPayment(s, "p1");
     expect(resolveStatus(paid, addDays(start, 44))).toBe("active");
-    expect(resolveStatus(paid, addDays(start, 46))).toBe("grace_period");
-    expect(resolveStatus(paid, addDays(start, 50))).toBe("expired");
-    expect(paid.consecutiveMonths).toBe(1);
+    expect(resolveStatus(paid, addDays(start, 5000))).toBe("active");
+    expect(paid.lifetime).toBe(true);
   });
 
   it("permisos de escritura", () => {
